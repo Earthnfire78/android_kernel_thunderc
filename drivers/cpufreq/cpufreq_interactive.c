@@ -512,7 +512,7 @@ static struct attribute *interactive_attributes[] = {
 
 static struct attribute_group interactive_attr_group = {
 	.attrs = interactive_attributes,
-	.name = "interactive",
+	.name = "Interactive",
 };
 
 static int cpufreq_governor_interactive(struct cpufreq_policy *new_policy,

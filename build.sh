@@ -1,25 +1,15 @@
 #!/bin/sh
 
-sed -i s/CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-BobZhome-${1}\"/ .config
+VM670_Kernel=device/lge/thunderc_VM670/files/kernel
+kerenl=arch/arm/boot/zImage
+sed -i s/CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"-OM-v3.9.1.4-${1}\"/ .config; make -j2
 
-make -j2
-
-cp arch/arm/boot/zImage mkboot/
-sed -i s/CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"\"/ .config
-cp .config arch/arm/configs/chaos_defconfig
-
-cd mkboot
-echo "making boot image"
-./img.sh
-
-zipfile="BobZhome_VM670_Kernel_v${1}.zip"
-if [ ! $4 ]; then
-	echo "making zip file"
-	cp boot.img ../zip
-	cp boot.img /tmp
-	cd ../zip
-	rm -f *.zip
-	zip -r $zipfile *
-	rm -f /tmp/*.zip
-	cp *.zip /tmp
+if [ -e $kernel ]; then
+	sed -i s/CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"\"/ .config
+	cp .config arch/arm/configs/chaos_defconfig
+	cp -f arch/arm/boot/zImage \
+	      drivers/*/tun.ko \
+	      drivers/*/wireless/bcm4325/wireless.ko \
+	      fs/*/cifs.ko ../../$VM670_Kernel
+	echo "Copying kernel and module drivers"
 fi

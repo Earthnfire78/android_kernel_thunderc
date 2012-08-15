@@ -32,6 +32,7 @@
 #include <mach/board.h>
 #include <mach/msm_iomap.h>
 #include <asm/mach-types.h>
+#include <mach/socinfo.h>
 
 #include "proc_comm.h"
 #include "smd_private.h"
@@ -956,3 +957,4 @@ void __init msm_acpu_clock_init(struct msm_acpu_clock_platform_data *clkdata)
 	cpufreq_frequency_table_get_attr(freq_table, smp_processor_id());
 #endif
 }
+
