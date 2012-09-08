@@ -44,9 +44,11 @@
 #include <mach/mpp.h>
 #include <mach/gpio.h>
 #include <mach/board_lge.h>
+#include <mach/socinfo.h>
+
+
 
 #include "devices.h"
-#include "socinfo.h"
 #include "clock.h"
 #include "msm-keypad-devices.h"
 #include "board-thunderc.h"

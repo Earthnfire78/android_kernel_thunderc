@@ -19,9 +19,10 @@
 #include <linux/err.h>
 #include <linux/spinlock.h>
 #include <linux/pm_qos_params.h>
+#include <mach/socinfo.h>
+
 
 #include "clock.h"
-#include "socinfo.h"
 
 static DEFINE_MUTEX(clocks_mutex);
 static DEFINE_SPINLOCK(clocks_lock);

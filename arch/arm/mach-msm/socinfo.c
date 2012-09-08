@@ -22,7 +22,8 @@
 
 #include <linux/types.h>
 #include <linux/sysdev.h>
-#include "socinfo.h"
+#include <mach/socinfo.h>
+
 #include "smd_private.h"
 #if defined (CONFIG_LGE_PCB_VERSION)  /* LG_FW_PCB_VERSION */
 #include <mach/lg_pcb_version.h>
