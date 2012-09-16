@@ -45,6 +45,9 @@
 #include <mach/rpc_hsusb.h>
 #include <linux/uaccess.h>
 #include <linux/wakelock.h>
+#ifdef CONFIG_FORCE_FAST_CHARGE
+#include <linux/fastchg.h>
+#endif
 
 /* LGE_CHANGE_S [hyunhui.park@lge.com] 2010-08-12, Add Header for LGE USB */
 #ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_GADGET
@@ -349,26 +352,15 @@ static ssize_t print_switch_state_for_autorun(struct switch_dev *sdev, char *buf
 
 static inline enum chg_type usb_get_chg_type(struct usb_info *ui)
 {
-
-/* LGE_CHANGE_S [hyunhui.park@lge.com] 2010-08-12, Detect Cable Type */
-/* CDMA - LT Cable, GSM/WCDMA - PIF Cable */	
-#ifdef CONFIG_USB_SUPPORT_LGE_ANDROID_GADGET
-	/* If cable is factory cable, it's value is 1 */
-	cable_type = lge_detect_factory_cable();
-#endif
-/* LGE_CHANGE_E [hyunhui.park@lge.com] 2010-08-12 */	
-
-/* LGE_CHANGES_S [younsuk.song@lge.com] 2010-06-30, TA when LT cable */
-#ifdef CONFIG_USB_SUPPORT_LGE_FACTORY_USB
-	if (cable_type == LGE_FACTORY_CABLE)
-		return USB_CHG_TYPE__WALLCHARGER;
-#endif
-/* LGE_CHANGES_E [younsuk.song@lge.com] 2010-06-30 */
-
+     #ifdef CONFIG_FORCE_FAST_CHARGE
+ 	if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS || force_fast_charge == 1) {
+     #else
 	if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS)
-		return USB_CHG_TYPE__WALLCHARGER;
-	else
-		return USB_CHG_TYPE__SDP;
+     #endif
+ 	  return USB_CHG_TYPE__WALLCHARGER;
+        }
+        else 
+          return USB_CHG_TYPE__SDP;
 }
 
 #define USB_WALLCHARGER_CHG_CURRENT 1800
