@@ -89,10 +89,10 @@ static int ami304_resume(struct device *device);
 #endif
 
 /* Addresses to scan */
-static unsigned short normal_i2c[] = { AMI304_I2C_ADDRESS, I2C_CLIENT_END };
+//static unsigned short normal_i2c[] = { AMI304_I2C_ADDRESS, I2C_CLIENT_END };
 
 /* Insmod parameters */
-I2C_CLIENT_INSMOD;
+//I2C_CLIENT_INSMOD;
 
 struct _ami304_data {
 	rwlock_t lock;
@@ -196,9 +196,9 @@ static int AMI304_Chipset_Init(int mode, int chipset)
 	i2c_master_send(ami304_i2c_client, &regaddr, 1);
 	i2c_master_recv(ami304_i2c_client, &ctrl3, 1);		
 
-	regaddr = AMI304_REG_CTRL4; //2 bytes
-	i2c_master_send(ami304_i2c_client, &regaddr, 1);
-	i2c_master_recv(ami304_i2c_client, &(ctrl4[0]), 2);
+//	regaddr = AMI304_REG_CTRL4; //2 bytes
+//	i2c_master_send(ami304_i2c_client, &regaddr, 1);
+//	i2c_master_recv(ami304_i2c_client, &(ctrl4[0]), 2);
 	
 	databuf[0] = AMI304_REG_CTRL1;
 	if( mode == AMI304_FORCE_MODE ) {
@@ -224,24 +224,22 @@ static int AMI304_Chipset_Init(int mode, int chipset)
 	i2c_master_send(ami304_i2c_client, databuf, 2);
 	
 	databuf[0] = AMI304_REG_CTRL4;	
-
-#if 0	// //AMI304  //AMI304_CHIPSET
-
+	if( chipset == AMI304_CHIPSET ) //AMI304
+	{
 //		ctrl4[1]   = ctrl4[1] & AMI304_CTRL4_COMPASS_MODE; 	 //0x5D
 		ctrl4[0] = 0x00;
 		ctrl4[1] = 0x00;
-
-#else	//AMI306	//AMI306_CHIPSET
-
+	}
+	else	//AMI306	//AMI306_CHIPSET
+	{
 //		ctrl4[1]   = ctrl4[1] | AMI306_CTRL4_HIGHSPEED_MODE; //0x5D
 		ctrl4[0] = 0x7e;
 		ctrl4[1] = 0xa0;
-#endif
-
+	}	
 	databuf[1] = ctrl4[0];
 	databuf[2] = ctrl4[1];
-	i2c_master_send(ami304_i2c_client, databuf, 3);
-
+	i2c_master_send(ami304_i2c_client, databuf, 3);				
+	
 	return 0;
 }
 
@@ -284,8 +282,6 @@ static int AMI304_ReadChipInfo(char *buf, int bufsize)
 static int AMI304_WIA(char *wia, int bufsize)
 {
 	char cmd;
-	int check[2];
-	int again_cnt = 0;
 	unsigned char databuf[10];
 
 	if ((!wia)||(bufsize<=30))
@@ -297,16 +293,9 @@ static int AMI304_WIA(char *wia, int bufsize)
 	}
 
 	cmd = AMI304_REG_WIA;
-	again_cnt = 3;
-again_i2c:
-	check[0] = i2c_master_send(ami304_i2c_client, &cmd, 1);
-	check[1] = i2c_master_recv(ami304_i2c_client, &(databuf[0]), 1);
-
-	if(((check[0] <= 0) || (check[1] <= 0)) && (again_cnt > 0))
-	{
-		again_cnt--;
-		goto again_i2c;
-	}
+	i2c_master_send(ami304_i2c_client, &cmd, 1);	
+	udelay(20);
+	i2c_master_recv(ami304_i2c_client, &(databuf[0]), 1);	
 	
 	sprintf(wia, "%02x", databuf[0]);
 	
@@ -358,13 +347,14 @@ static int AMI304_ReadSensorData(char *buf, int bufsize)
 	res = i2c_master_send(ami304_i2c_client, databuf, 2);	
 	if (res <= 0) 
 		goto exit_AMI304_ReadSensorData;
+	//udelay(700);
 	msleep(1);
 	// We can read all measured data in once
 	cmd = AMI304_REG_DATAXH;
 	res = i2c_master_send(ami304_i2c_client, &cmd, 1);	
 	if (res <= 0) 
 		goto exit_AMI304_ReadSensorData;
-	udelay(20);
+//	udelay(20);
 	res = i2c_master_recv(ami304_i2c_client, &(databuf[0]), 6);
 	if (res <= 0) 
 		goto exit_AMI304_ReadSensorData;
@@ -410,6 +400,7 @@ static int AMI304_ReadPostureData(char *buf, int bufsize)
 			ami304mid_data.roll, 
 			ami304mid_data.status);
 	read_unlock(&ami304mid_data.datalock);
+	
 	return 0;
 }
 
@@ -428,6 +419,7 @@ static int AMI304_ReadCaliData(char *buf, int bufsize)
 			ami304mid_data.na.z,
 			ami304mid_data.status);
 	read_unlock(&ami304mid_data.datalock);
+	
 	return 0;
 }
 
@@ -447,6 +439,7 @@ static int AMI304_ReadGyroData(char *buf, int bufsize)
 
 static int AMI304_ReadPedoData(char *buf, int bufsize)
 {
+
 	if ((!buf)||(bufsize<=80))
 		return -1;
 
@@ -466,16 +459,9 @@ static int AMI304_ReadMiddleControl(char *buf, int bufsize)
 
 	read_lock(&ami304mid_data.ctrllock);
 	sprintf(buf, "%d %d %d %d %d %d %d %d %d %d",
-			ami304mid_data.controldata[AMI304_CB_LOOPDELAY],
-			ami304mid_data.controldata[AMI304_CB_RUN],
-			ami304mid_data.controldata[AMI304_CB_ACCCALI],
-			ami304mid_data.controldata[AMI304_CB_MAGCALI],
-			ami304mid_data.controldata[AMI304_CB_ACTIVESENSORS],
-			ami304mid_data.controldata[AMI304_CB_PD_RESET],
-			ami304mid_data.controldata[AMI304_CB_PD_EN_PARAM],
-			ami304mid_data.controldata[AMI304_CB_UNDEFINE_1],
-			ami304mid_data.controldata[AMI304_CB_UNDEFINE_2],
-			ami304mid_data.controldata[AMI304_CB_UNDEFINE_3] );
+		ami304mid_data.controldata[AMI304_CB_LOOPDELAY], ami304mid_data.controldata[AMI304_CB_RUN], ami304mid_data.controldata[AMI304_CB_ACCCALI], ami304mid_data.controldata[AMI304_CB_MAGCALI],
+		ami304mid_data.controldata[AMI304_CB_ACTIVESENSORS], ami304mid_data.controldata[AMI304_CB_PD_RESET], ami304mid_data.controldata[AMI304_CB_PD_EN_PARAM], ami304mid_data.controldata[AMI304_CB_QWERTY],
+		ami304mid_data.controldata[AMI304_CB_CHANGE_WINDOW], ami304mid_data.controldata[AMI304_CB_UNDEFINE_2] );
 	read_unlock(&ami304mid_data.ctrllock);
 	return 0;
 }
@@ -544,25 +530,7 @@ static ssize_t show_chipinfo_value(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	char strbuf[AMI304_BUFSIZE];
-	int mx, my, mz;
-	int mxh, mxl, myh, myl, mzh, mzl;
-	
 	AMI304_ReadChipInfo(strbuf, AMI304_BUFSIZE);
-
-	mx = my = mz = 0;
-	mxh = mxl = myh = myl = mzh = mzl = 0;
-
-	sscanf(strbuf, "%x %x %x %x %x %x", &mxl, &mxh, &myl, &myh, &mzl, &mzh);
-	mx = mxh << 8 | mxl;
-	my = myh << 8 | myl;
-	mz = mzh << 8 | mzl;
-	if (mx>32768)  mx = mx-65536;//check negative value
-	if (my>32768)  my = my-65536;//check negative value
-	if (mz>32768)  mz = mz-65536;//check negative value
-
-	memset(strbuf, 0x00, AMI304_BUFSIZE);
-	sprintf(strbuf, "%d %d %d", mx, my, mz);
-
 	return sprintf(buf, "%s\n", strbuf);
 }
 
@@ -618,31 +586,10 @@ static ssize_t show_mode_value(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	int mode=0;
-	u8 regaddr;
-	u8 ctrl1, ctrl2, ctrl3;
-	unsigned char ctrl4[2];
-
 	read_lock(&ami304_data.lock);
 	mode = ami304_data.mode;
 	read_unlock(&ami304_data.lock);
-
-	regaddr = AMI304_REG_CTRL1;
-	i2c_master_send(ami304_i2c_client, &regaddr, 1);
-	i2c_master_recv(ami304_i2c_client, &ctrl1, 1);
-
-	regaddr = AMI304_REG_CTRL2;
-	i2c_master_send(ami304_i2c_client, &regaddr, 1);
-	i2c_master_recv(ami304_i2c_client, &ctrl2, 1);
-
-	regaddr = AMI304_REG_CTRL3;
-	i2c_master_send(ami304_i2c_client, &regaddr, 1);
-	i2c_master_recv(ami304_i2c_client, &ctrl3, 1);
-
-	regaddr = AMI304_REG_CTRL4;
-	i2c_master_send(ami304_i2c_client, &regaddr, 1);
-	i2c_master_recv(ami304_i2c_client, ctrl4, 2);	
-
-	return sprintf(buf, "%d, %d/%d/%d/%d/%d \n", mode, ctrl1, ctrl2, ctrl3, ctrl4[0], ctrl4[1]);
+	return sprintf(buf, "%d\n", mode);
 }
 
 static ssize_t store_mode_value(struct device *dev, 
@@ -674,32 +621,6 @@ static ssize_t show_roll_value(struct device *dev,
 	return sprintf(buf, "%d\n", ami304mid_data.roll);
 }
 
-static ssize_t show_enable_value(struct device *dev, 
-		struct device_attribute *attr, char *buf)
-{
-	char strbuf[AMI304_BUFSIZE];
-	sprintf(strbuf, "%d", atomic_read(&ami304_report_enabled));
-	return sprintf(buf, "%s\n", strbuf);
-}
-
-static ssize_t store_enable_value(struct device *dev, 
-		struct device_attribute *attr, const char *buf, size_t count)
-{
-	int mode=0;
-	sscanf(buf, "%d", &mode);
-	if (mode) {
-			ami304_resume(dev);
-			atomic_set(&ami304_report_enabled, 1);
-			printk(KERN_INFO "Compass_Power On\n");
-	}
-	else {
-			ami304_suspend(dev);
-			atomic_set(&ami304_report_enabled, 0);
-			printk(KERN_INFO "Compass_Power Off\n");
-	}
-	return 0;
-}
-
 static DEVICE_ATTR(chipinfo, S_IRUGO, show_chipinfo_value, NULL);
 static DEVICE_ATTR(sensordata, S_IRUGO, show_sensordata_value, NULL);
 static DEVICE_ATTR(posturedata, S_IRUGO, show_posturedata_value, NULL);
@@ -710,7 +631,6 @@ static DEVICE_ATTR(mode, S_IRUGO | S_IWUSR, show_mode_value, store_mode_value );
 static DEVICE_ATTR(wia, S_IRUGO, show_wia_value, NULL);
 static DEVICE_ATTR(pitch, S_IRUGO | S_IWUSR, show_pitch_value, NULL);
 static DEVICE_ATTR(roll, S_IRUGO | S_IWUSR, show_roll_value, NULL);
-static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR, show_enable_value, store_enable_value);
 
 static struct attribute *ami304_attributes[] = {
 	&dev_attr_chipinfo.attr,
@@ -724,12 +644,11 @@ static struct attribute *ami304_attributes[] = {
 	/* Test mode attribute */
 	&dev_attr_pitch.attr,
 	&dev_attr_roll.attr,
-	&dev_attr_enable.attr,
 	NULL,
 };
 
 static struct attribute_group ami304_attribute_group = {
-	.attrs = ami304_attributes,
+	.attrs = ami304_attributes
 };
 
 static int ami304_open(struct inode *inode, struct file *file)
@@ -764,7 +683,7 @@ static int ami304_ioctl(struct inode *inode, struct file *file, unsigned int cmd
 	int retval=0;
 	int mode=0,chipset=0;
 	int iEnReport;
-
+	
 	switch (cmd) {
 		case AMI304_IOCTL_INIT:
 			read_lock(&ami304_data.lock);
@@ -1283,6 +1202,7 @@ static int ami304hal_ioctl(struct inode *inode, struct file *file, unsigned int 
 	int pedoparam[AMI304_PD_LENGTH];		
 	void __user *data;
 	int retval=0;
+		
 	switch (cmd) {
 		case AMI304HAL_IOCTL_GET_SENSORDATA:
 			data = (void __user *) arg;
@@ -1523,7 +1443,7 @@ static int __devinit ami304_probe(struct i2c_client *client,
 	int err = 0;
 	struct ami304_i2c_data *data;
 	struct ecom_platform_data* ecom_pdata;
-
+	
 	if (AMI304_DEBUG_FUNC_TRACE & ami304_debug_mask)
 		AMID("motion start....!\n");
 
@@ -1545,7 +1465,6 @@ static int __devinit ami304_probe(struct i2c_client *client,
 	ecom_pdata = ami304_i2c_client->dev.platform_data;
 	ecom_pdata->power(1);
 
-	mdelay(1);
 #if defined(CONFIG_HAS_EARLYSUSPEND)
 	ami304_sensor_early_suspend.suspend = ami304_early_suspend;
 	ami304_sensor_early_suspend.resume = ami304_late_resume;
@@ -1716,12 +1635,14 @@ static int __init ami304_init(void)
 	 * 20 ms by sprint request
 	 */
 	ami304mid_data.controldata[AMI304_CB_LOOPDELAY] = 20;  // Loop Delay
-	ami304mid_data.controldata[AMI304_CB_RUN] = 1;         // Run	
+	ami304mid_data.controldata[AMI304_CB_RUN] = 1;         // Run = 1	//resume = 2
 	ami304mid_data.controldata[AMI304_CB_ACCCALI] = 0;     // Start-AccCali
 	ami304mid_data.controldata[AMI304_CB_MAGCALI] = 1;     // Start-MagCali
 	ami304mid_data.controldata[AMI304_CB_ACTIVESENSORS] = 0;   // Active Sensors
 	ami304mid_data.controldata[AMI304_CB_PD_RESET] = 0;    // Pedometer not reset    
 	ami304mid_data.controldata[AMI304_CB_PD_EN_PARAM] = 0; // Disable parameters of Pedometer
+	ami304mid_data.controldata[AMI304_CB_QWERTY] =   0;   // Qwerty Keyboard : close -> 0, open -> 1.
+	ami304mid_data.controldata[AMI304_CB_CHANGE_WINDOW] =   0;   //ADC_WINDOW_CONTROL: ADC_WINDOW_NORMAL->0 ADC_WINDOW_CHANGED->1 ADC_WINDOW_EXCEEDED->2
 	memset(&ami304mid_data.pedometerparam[0], 0, sizeof(int)*AMI304_PD_LENGTH);	
 	atomic_set(&dev_open_count, 0);
 	atomic_set(&hal_open_count, 0);
