@@ -29,13 +29,11 @@ config MACH_MSM7X27_THUNDERC_SPRINT
 	  Support for the LGE MSM7x27 THUNDER CDMA Sprint board.
 endchoice
 
-config MACH_MSM7X27_THUNDERG
-	depends on ARCH_MSM7X27
-	depends on !MSM_STACKED_MEMORY
-	select MACH_LGE
-	bool "MSM7x27 THUNDER Global"
+config MACH_MSM7X27_THUNDERC_SPRINT_VM
+	bool "MSM7x27 THUNDER CDMA Virgin Mobile"
+	depends on MACH_MSM7X27_THUNDERC_SPRINT
 	help
-	  Support for the LGE MSM7x27 THUNDER Global board.
+	  Support for the LGE MSM7x27 THUNDER CDMA Virgin Mobile board.
 
 endmenu
 
@@ -161,12 +159,32 @@ config LGE_ATS_INPUT_DEVICE
 	help
 	 Choose if use ATS input device used for generating input event from user space
 
+config LGE_FBCON_INACTIVE_CONSOLE
+	bool "Support LGE FBCON inactive console"
+	default n
+	depends on MACH_LGE
+	help
+	 Choose if inactive console
+
 config LGE_PCB_VERSION
 	bool "Support LGE PCB Version RAPI"
 	default n 
 	depends on MACH_LGE
 	help
 	  Choose if use PCB Version RAPI
+	  
+config LGE_PWRSINK
+	bool "Support LGE Power Sink Driver"
+	default n
+	depends on MACH_LGE
+	help
+	 Choose if use Power sink driver
+
+config LGE_HIDDEN_RESET_PATCH
+   bool "Hidden reset function"
+   default n
+   help
+     This patch supports hidden reset when kernel panic is occured.
 
 menu "LGE specific patches"
 	depends on MACH_LGE
@@ -177,7 +195,6 @@ config LGE_TCP_IMPROVEMENT_PATCH
 	help
 	  This patch is used to improve tcp performance of vs740 model
 	  Disable tcp delayed ack for evdo networks
-
 # LGE_CHANGE [dojip.kim@lge.com] 2010-07-30, sprint
 config LGE_TCP_MTU_1472
 	bool "tcp mtu patch for sprint"
@@ -241,7 +258,6 @@ config LGE_DETECT_PIF_PATCH
 	  This patch is added for detection of pif cable of factory
 	  If pif is once detected, that information will be passed through
 	  sysfs in battery driver
-
 config LGE_DIAG_WMC
 	bool "Support LGE diag WMC"
 	default n
@@ -264,7 +280,7 @@ config LGE_RAM_CONSOLE_CLEAN
 	default n
 	help
 	  This patch is to clean the ram console buffer when normal shutdown
-
+	  
 # LGE_CHANGE [dojip.kim@lge.com] 2010-08-09
 config LGE_THERM_NO_STOP_CHARGING
 	bool "LGE no stop charging even if hot or cold battery"
@@ -286,6 +302,14 @@ config LGE_BLOCK_HOTPLUG
 	help
 	  Android doesn't need a hotplug. So, block the hotplug to avoid the rooting
 
+config LGE_ATCMD_TTY
+	bool "Support LGE atcmd bypassing tty"
+	default n
+	help
+	  Support LGE atcmd bypassing tty. "/dev/atcmd-tty0" is back-end tty,
+	  and "dev/atcmd-tty1" is front-end tty. Back-end tty will be interfaced
+	  with portbridge and front-end tty will be interfaced with parser/filter.
+
 config LGE_GRAM_REFRESH_PATCH
 	bool "LGE gram refresh patch"
 	default n
@@ -297,13 +321,17 @@ config LGE_GRAM_REFRESH_PATCH
 	  for preventing this problem, add refreshing routine before turning 
 	  backlight on by using late resume mechanism.
 
-config FORCE_FAST_CHARGE
-        bool "Force AC charge mode at will"
-        default y
-        help
-          A simple sysfs interface to force adapters that
-          are detected as USB to charge as AC.
-
+config LGE_SUSPEND_HIGH_PRIO_PATCH
+	bool "Make 'suspend' kernel thread get SCHED_FIFO policy"
+	default n
+	help
+	  This patch is added for guaranteeing instant scheduling of "suspend" kthread.
+	  Normally, "suspend" kthread is scheduled as soon as writing "on" to /sys/power/state.
+	  But, sometimes "suspend" kthread can't be scheduled in 5~6 second. 
+	  This causes black screen in spite of pushing power button.
+	  For prevent this, raise scheduling policy of "suspend" kthread to SCHED_FIFO when
+	  entering early suspend state, and lower to SCHED_NORMAL when escaping late resume 
+	  state
 endmenu
 
 endmenu

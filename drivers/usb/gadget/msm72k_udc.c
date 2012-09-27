@@ -355,7 +355,7 @@ static inline enum chg_type usb_get_chg_type(struct usb_info *ui)
      #ifdef CONFIG_FORCE_FAST_CHARGE
  	if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS || force_fast_charge == 1) {
      #else
-	if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS)
+	if ((readl(USB_PORTSC) & PORTSC_LS) == PORTSC_LS) {
      #endif
  	  return USB_CHG_TYPE__WALLCHARGER;
         }
