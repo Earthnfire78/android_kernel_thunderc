@@ -321,6 +321,13 @@ config LGE_GRAM_REFRESH_PATCH
 	  for preventing this problem, add refreshing routine before turning 
 	  backlight on by using late resume mechanism.
 
+config FORCE_FAST_CHARGE
+        bool "Force AC charge mode at will"
+        default y
+        help
+          A simple sysfs interface to force adapters that
+          are detected as USB to charge as AC.
+
 config LGE_SUSPEND_HIGH_PRIO_PATCH
 	bool "Make 'suspend' kernel thread get SCHED_FIFO policy"
 	default n

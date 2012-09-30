@@ -329,8 +329,8 @@ MODFLAGS	= -DMODULE  -mfpu=vfp
 CFLAGS_MODULE   = $(MODFLAGS)
 AFLAGS_MODULE   = $(MODFLAGS)
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
-CFLAGS_KERNEL	= -ffast-math -mfpu=vfp -pipe
-AFLAGS_KERNEL	= -ffast-math -mfpu=vfp -pipe
+CFLAGS_KERNEL  = -mfloat-abi=hard -ffast-math -mfpu=vfp -pipe
+AFLAGS_KERNEL  = -mfloat-abi=hard -ffast-math -mfpu=vfp -pipe
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
