@@ -659,7 +659,7 @@ static struct attribute * smartass_attributes[] = {
 
 static struct attribute_group smartass_attr_group = {
 	.attrs = smartass_attributes,
-	.name = "Smartass",
+	.name = "SmartassV2",
 };
 
 static int cpufreq_governor_smartass(struct cpufreq_policy *new_policy,
@@ -836,7 +836,8 @@ static int __init cpufreq_smartass_init(void)
 	}
 
 	// Scale up is high priority
-	up_wq = create_rt_workqueue("ksmartass_up");
+	// up_wq = create_rt_workqueue("ksmartass_up");
+	up_wq = create_workqueue("ksmartass_up");
 	down_wq = create_workqueue("ksmartass_down");
 	if (!up_wq || !down_wq)
 		return -ENOMEM;

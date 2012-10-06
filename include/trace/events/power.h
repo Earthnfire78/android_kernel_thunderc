@@ -19,7 +19,7 @@
 #include <linux/hrtimer.h>
 #include <trace/events/power.h>
 
-#include "cpuidle.h"
+#include <linux/cpuidle.h>
 
 DEFINE_PER_CPU(struct cpuidle_device *, cpuidle_devices);
 

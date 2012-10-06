@@ -1,11 +1,13 @@
 #!/bin/sh
 
-base=`pwd`
+make clean
 VM670_Kernel=device/lge/thunderc_VM670/files/kernel
 kerenl=arch/arm/boot/zImage
-version=-OM-v4.1.3.1
+version=-OM-v`date +%Y%m%d`
+clear
 sed -i s/CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"$version-${1}\"/ .config; make -j2
 
+version=OM-v`date +%Y%m%d`
 if [ -e $kernel ]; then
 	sed -i s/CONFIG_LOCALVERSION=\".*\"/CONFIG_LOCALVERSION=\"\"/ .config
 	cp .config arch/arm/configs/chaos_defconfig
@@ -23,7 +25,7 @@ cp -f $kerenl zip/kernel
 cp -f drivers/net/tun.ko zip/system/lib/modules
 cp -f drivers/net/wireless/*/*.ko zip/system/lib/modules
 
-zipfile="OM-Mandylion-Kernel.zip"
+zipfile="$version-Kernel.zip"
 if [ ! $4 ]; then
 	cd zip/
 	rm -f *.zip

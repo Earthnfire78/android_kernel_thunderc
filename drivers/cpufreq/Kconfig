@@ -98,7 +98,6 @@ config CPU_FREQ_DEFAULT_GOV_ONDEMAND
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the performance governor.
 
-
 config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	bool "interactive"
 	select CPU_FREQ_GOV_INTERACTIVE
@@ -107,6 +106,12 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_INTERACTIVEX
+	bool "interactivex"
+	select CPU_FREQ_GOV_INTERACTIVEX
+	help
+	  Modified version of interactive with sleep+wake code.
 
 config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	bool "conservative"
@@ -131,11 +136,17 @@ config CPU_FREQ_DEFAULT_GOV_SAVAGEDZEN
 	help
 	  Use the CPUFreq governor 'Savaged-Zen' as default.
 
-config CPU_FREQ_DEFAULT_GOV_SCARY
-        bool "scary"
-        select CPU_FREQ_GOV_SCARY
+#config CPU_FREQ_DEFAULT_GOV_SCARY
+#       bool "scary"
+#        select CPU_FREQ_GOV_SCARY
+#	help
+#	  Use the CPUFreq governor 'scary' as default.
+
+config CPU_FREQ_DEFAULT_GOV_INTELLIDEMAND
+	bool "intellidemand"
+	select CPU_FREQ_GOV_INTELLIDEMAND
 	help
-	  Use the CPUFreq governor 'scary' as default.
+          Use the CPUFreq governor 'Intellidemand' as default.
 
 endchoice
 
@@ -200,6 +211,24 @@ config CPU_FREQ_GOV_INTERACTIVE
 	  'interactive' - This driver adds a dynamic cpufreq policy governor
 	  designed for latency-sensitive workloads.
 
+	  This governor attempts to reduce the latency of clock
+	  increases so that the system is more responsive to
+	  interactive workloads.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_interactive.
+
+	  For details, take a look at linux/Documentation/cpu-freq.
+
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_INTERACTIVEX
+	tristate "'interactiveX' cpufreq policy governor"
+	help
+	  'InteractiveX' - Modified version of interactive with sleep+wake code.
+
+  	  If in doubt, say N.
+
 config CPU_FREQ_GOV_CONSERVATIVE
 	tristate "'conservative' cpufreq governor"
 	depends on CPU_FREQ
@@ -239,11 +268,19 @@ config CPU_FREQ_GOV_SAVAGEDZEN
 
 	  If in doubt, say N.
 
-config CPU_FREQ_GOV_SCARY
-	tristate "'scary' cpufreq governor"
+#config CPU_FREQ_GOV_SCARY
+#	tristate "'scary' cpufreq governor"
+#	depends on CPU_FREQ
+#	help
+#	  'scary' - a governor for cabbages
+#
+#	  If in doubt, say N.
+
+config CPU_FREQ_GOV_INTELLIDEMAND
+	tristate "'intellidemand' cpufreq governor"
 	depends on CPU_FREQ
 	help
-	  'scary' - a governor for cabbages
+	  'Intellidemand' - an intelligent ondemand governor
 
 	  If in doubt, say N.
 
