@@ -5,8 +5,8 @@ ARCH=$2
 SMP=$3
 PREEMPT=$4
 CC=$5
-BUILD_USER=mike
-BUILD_HOST=mandlyion
+BUILD_USER=Mike
+BUILD_HOST=Mandylion-`date +%H%M%S`
 
 vecho() { [ "${quiet}" = "silent_" ] || echo "$@" ; }
 
