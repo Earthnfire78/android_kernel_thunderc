@@ -33,9 +33,11 @@
 #define INTMSK		LCD_CONTROL_BLOCK_BASE|(0x1c)
 #define VPOS		LCD_CONTROL_BLOCK_BASE|(0xc0)
 
+#if 0
 static uint32 mddi_hitachi_curr_vpos;
 static boolean mddi_hitachi_monitor_refresh_value = FALSE;
 static boolean mddi_hitachi_report_refresh_measurements = FALSE;
+#endif
 static boolean is_lcd_on = -1;
 
 /* The comment from AMSS codes:

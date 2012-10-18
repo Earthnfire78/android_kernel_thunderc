@@ -16,14 +16,18 @@ do_compile () {
 			drivers/net/wireless/*/*.ko ../../$kernel_type
 		echo
 		echo "  Copying kernel and module drivers"
+	else
+		echo "  ERROR: Compiling kernel"
 	fi
 
-	echo "  Now making flash install zip"
+	echo "  Now making install zip"
 
 	mkdir -p zip/system/lib/modules
 	cp -f $kerenl zip/kernel
-	cp -f drivers/net/tun.ko zip/system/lib/modules
-	cp -f drivers/net/wireless/*/*.ko zip/system/lib/modules
+	cp -f drivers/net/tun.ko \
+		drivers/net/wireless/*/*.ko zip/system/lib/modules
+	cp -f Documentation/install/update-binary zip/META-INF/com/google/android
+	
 
 	if [ ! $4 ]; then
 		cd zip/
@@ -32,8 +36,8 @@ do_compile () {
 		rm -f /tmp/*.zip
 		cp *.zip /tmp
 		echo "  Signing Kernel zip package."
-		java -Xmx512m -jar ../Documentation/framework/signapk.jar -w \
-			../Documentation/framework/testkey.x509.pem ../Documentation/framework/testkey.pk8 \
+		java -Xmx512m -jar ../../../out/host/linux-x86/framework/signapk.jar -w \
+			../../../build/target/product/security/testkey.x509.pem ../../../build/target/product/security/testkey.pk8 \
 			../zip/update.zip ../zip/$zipfile
 		rm -f update.zip
 		cd ..
@@ -52,11 +56,13 @@ choose_kernel () {
 		version=-VM670-OM-`date +%Y%m%d`
 		kernel_type=device/lge/thunderc_VM670/files/kernel
 		zipfile="VM670-OM-Kernel.zip"; cp -f arch/arm/configs/vm670_config .config
+		cp -f Documentation/framework/updater-script.vm670 zip/META-INF/com/google/android/updater-script
 		do_compile; cp -f .config arch/arm/configs/vm670_config
 	elif [ "$compile_kernel" = "2" ]; then
 		version=-LS670-OM-`date +%Y%m%d`
 		kernel_type=device/lge/thunderc_LS670/files/kernel
 		zipfile="LS670-OM-Kernel.zip"; cp -f arch/arm/configs/ls670_config .config
+		cp -f Documentation/install/updater-script.ls670 zip/META-INF/com/google/android/updater-script 
 		do_compile; cp -f .config arch/arm/configs/ls670_config
 	fi		
 }

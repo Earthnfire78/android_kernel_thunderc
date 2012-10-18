@@ -19,33 +19,42 @@
  * along with this program; if not, you can find it at http://www.fsf.org
  */
 
-
 #include "msm_fb.h"
 #include "mddihost.h"
 #include "mddihosti.h"
 #include <asm/gpio.h>
 #include <mach/vreg.h>
 
+/* LGE_CHANGE [dojip.kim@lge.com] 2010-05-11, from mddi_hitachi_hvga.c */
+/* LGE_CHANGE
+ * Define new structure named 'msm_panel_hitachi_pdata' 
+ * to use LCD initialization Flag (.initialized).
+ * 2010-04-21, minjong.gong@lge.com
+ */
 #include <mach/board_lge.h>
 
 
 #define PANEL_DEBUG 0
 
-/* set gamma */
-//#define GAMMA_CURRENT
-//#define GAMMA_1_DOT_8
-//#define GAMMA_1_DOT_9
-//#define GAMMA_2_DOT_0
-//#define GAMMA_2_DOT_1
-#define GAMMA_2_DOT_2
+#define MDDI_NOVATEK_HVGA_PANEL_MFR_NAME		(0xB9F6)
+#define MDDI_NOVATEK_HVGA_PANEL_PRODUCT_CODE	(0x5451)
 
-
+/* LGE_CHANGE [dojip.kim@lge.com] 2010-04-26, 
+ * tentative command for 4/20,21 shipping sample 
+ */
+/* LGE_CHANGE [dojip.kim@lge.com] 2010-05-13, not any more needed */
+//#define USE_TENTATIVE_COMMAND	1
 
 #define LCD_CONTROL_BLOCK_BASE	0x110000
 #define INTFLG		LCD_CONTROL_BLOCK_BASE|(0x18)
 #define INTMSK		LCD_CONTROL_BLOCK_BASE|(0x1c)
 #define VPOS		LCD_CONTROL_BLOCK_BASE|(0xc0)
 
+#if 0 /* Block temporaly till vsync implement */
+static uint32 mddi_novatek_curr_vpos;
+static boolean mddi_novatek_monitor_refresh_value = FALSE;
+static boolean mddi_novatek_report_refresh_measurements = FALSE;
+#endif
 static boolean is_lcd_on = -1;
 
 /* The comment from AMSS codes:
