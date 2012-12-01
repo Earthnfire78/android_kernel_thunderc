@@ -172,6 +172,8 @@ SUBARCH := arm
 # Another way is to have ARCH set in the environment.
 # The default ARCH is the host where make is executed.
 
+COMPILER := ../../prebuilt/linux-x86/toolchain
+
 # CROSS_COMPILE specify the prefix used for all executables used
 # during compilation. Only gcc and related bin-utils executables
 # are prefixed with $(CROSS_COMPILE).
@@ -182,7 +184,7 @@ SUBARCH := arm
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= $(SUBARCH)
-CROSS_COMPILE	?= ../../prebuilt/linux-x86/toolchain/linaro-arm-linux--4.7-2/bin/arm-linux-gnueabihf-
+CROSS_COMPILE	?= $(COMPILER)/linaro-arm-linux--4.7.3/bin/arm-linux-gnueabihf-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -327,7 +329,7 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF) $(LGE_CF)
 MODFLAGS	= -DMODULE  -mfpu=vfp
 CFLAGS_MODULE   = $(MODFLAGS)
-AFLAGS_MODULE   = $(MODFLAGS)
+AFLAGS_MODULE   = $(MODFLAGS) -fno-pic
 LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
 CFLAGS_KERNEL  = -mfloat-abi=hard -ffast-math -mfpu=vfp -pipe
 AFLAGS_KERNEL  = -mfloat-abi=hard -ffast-math -mfpu=vfp -pipe

@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.32.9
-# Fri Oct  5 22:29:29 2012
+# Sat Dec  1 08:18:53 2012
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -270,7 +270,7 @@ CONFIG_MSM_AMSS_VERSION=6225
 # CONFIG_MSM_AMSS_VERSION_6210 is not set
 # CONFIG_MSM_AMSS_VERSION_6220 is not set
 CONFIG_MSM_AMSS_VERSION_6225=y
-CONFIG_MSM_DEBUG_UART_NONE=y
+# CONFIG_MSM_DEBUG_UART_NONE is not set
 # CONFIG_MSM_DEBUG_UART1 is not set
 # CONFIG_MSM_DEBUG_UART2 is not set
 # CONFIG_MSM_DEBUG_UART3 is not set
