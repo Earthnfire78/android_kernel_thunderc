@@ -24,6 +24,7 @@
 #include <linux/spinlock.h>
 #include <linux/stat.h>
 #include <linux/uid_stat.h>
+#include <net/activity_stats.h>
 
 static DEFINE_SPINLOCK(uid_lock);
 static LIST_HEAD(uid_list);
