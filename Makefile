@@ -172,7 +172,7 @@ SUBARCH := arm
 # Another way is to have ARCH set in the environment.
 # The default ARCH is the host where make is executed.
 
-COMPILER := ../../prebuilt/linux-x86/toolchain
+TOOLCHAIN := ../../prebuilt/linux-x86/toolchain
 
 # CROSS_COMPILE specify the prefix used for all executables used
 # during compilation. Only gcc and related bin-utils executables
@@ -184,7 +184,7 @@ COMPILER := ../../prebuilt/linux-x86/toolchain
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= $(SUBARCH)
-CROSS_COMPILE	?= $(COMPILER)/linaro-arm-linux--4.7.3/bin/arm-linux-gnueabihf-
+CROSS_COMPILE	?= $(TOOLCHAIN)/linaro-arm-linux--4.7.3/bin/arm-linux-gnueabihf-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
