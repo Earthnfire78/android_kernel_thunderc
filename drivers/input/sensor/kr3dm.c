@@ -879,23 +879,7 @@ static int kr3dm_resume(struct device *device)
 	struct i2c_client *client = i2c_verify_client(device);
 	struct kr3dm_data *kr = i2c_get_clientdata(client);
 
-#if 0
-	int err = 0;
-
-	if (kr->on_before_suspend){
-
-		kr->pdata->gpio_config(1);
-
-		return kr3dm_enable(kr);
-	}
-
-	err =  kr3dm_hw_init(kr);
-	if (err < 0)
-		printk("%s i2c failed\n", __FUNCTION__);
-
-	return 0;
-#endif
-
+	kr->pdata->gpio_config(1);
 	return kr3dm_enable(kr);
 }
 
@@ -904,14 +888,7 @@ static int kr3dm_suspend(struct device *device)
 	struct i2c_client *client = i2c_verify_client(device);
 	struct kr3dm_data *kr = i2c_get_clientdata(client);
 
-#if 0
-	kr->on_before_suspend = atomic_read(&kr->enabled);
-
-	if (kr->on_before_suspend){
-		kr->pdata->gpio_config(0);
-	}
-#endif
-
+	kr->pdata->gpio_config(0);
 	return kr3dm_disable(kr);
 }
 #endif
